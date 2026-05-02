@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MORTAL CODE</title>
+<style>
+:root{
+  --bg:#05030d;--neon:#8affff;--neon-green:#5eff8f;--purple:#af4cff;--red:#ff4c8f;
+  --text:#e9e7ff;--muted:#9a94b6;
+  font-family:'Courier New',monospace,system-ui
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;
+  background:radial-gradient(circle at top,rgba(146,68,255,.12),transparent 20%),
+             radial-gradient(circle at bottom right,rgba(255,76,143,.1),transparent 18%),
+             linear-gradient(180deg,#040205,#09060f);
+  color:var(--text);font-size:14px}
+body::after{content:'';position:fixed;inset:0;
+  background-image:linear-gradient(180deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:100% 24px;pointer-events:none;opacity:.25;z-index:0}
+.phone{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(420px,100vw);height:min(100vh,720px);max-width:420px;max-height:720px;min-height:600px;
+  border-radius:42px;border:3px solid rgba(138,76,255,.28);
+  background:radial-gradient(circle at top left,rgba(138,76,255,.16),transparent 25%),
+             radial-gradient(circle at bottom right,rgba(255,76,143,.1),transparent 24%),
+             linear-gradient(180deg,rgba(10,6,22,.95),rgba(4,2,15,.96));
+  box-shadow:0 0 80px rgba(138,76,255,.28),inset 0 0 1px rgba(255,255,255,.08);
+  overflow:hidden;z-index:100}
+.screen{position:absolute;inset:0;width:100%;height:100%;
+  background:linear-gradient(180deg,rgba(16,8,36,.96),rgba(8,4,20,.98));
+  border-radius:28px;display:grid;grid-template-rows:auto 1fr;overflow:hidden;
+  opacity:1;transform:translateY(0);visibility:visible;
+  transition:opacity .28s ease,transform .28s ease,visibility .28s ease}
+.screen.hide{opacity:0;pointer-events:none;transform:translateY(14px);visibility:hidden}
+.sc{overflow-y:auto;padding:16px;display:grid;gap:14px;z-index:1;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.sc::-webkit-scrollbar{width:6px}
+.sc::-webkit-scrollbar-thumb{background:rgba(138,76,255,.3);border-radius:999px}
+.header{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06);
+  background:rgba(4,2,16,.7);backdrop-filter:blur(10px);z-index:1;flex-shrink:0}
+.header h1{font-size:13px;letter-spacing:.45em;text-transform:uppercase;color:var(--neon)}
+.header .sub{font-size:9px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-top:2px}
+.pills{display:flex;gap:5px;flex-wrap:wrap}
+.pill{padding:5px 9px;border-radius:12px;border:1px solid rgba(138,255,255,.12);
+  background:rgba(255,255,255,.04);color:var(--text);font-size:10px;white-space:nowrap}
+.btn{border:1px solid rgba(255,255,255,.1);border-radius:16px;
+  background:rgba(22,10,48,.9);color:var(--text);padding:13px 16px;cursor:pointer;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),border-color .25s,background .25s;
+  font-size:12px;text-align:left;font-family:'Courier New',monospace;width:100%}
+.btn:hover{transform:translateY(-1px);border-color:rgba(138,255,255,.25);background:rgba(38,14,74,.95)}
+.btn:active{transform:scale(.97)}
+.btn.p{background:linear-gradient(135deg,rgba(138,255,255,.14),rgba(179,76,255,.16));
+  border-color:rgba(138,255,255,.38);color:var(--neon);text-transform:uppercase;letter-spacing:.1em}
+.btn.s{background:rgba(255,255,255,.04);color:var(--muted)}
+.btn.sm{width:auto;padding:6px 12px;font-size:11px}
+.grid{display:grid;gap:10px}
+.card{padding:14px;border-radius:20px;background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);box-shadow:inset 0 0 18px rgba(138,76,255,.04)}
+.card h2{font-size:15px;color:var(--neon);letter-spacing:.1em;margin-bottom:6px}
+.card p{color:var(--text);opacity:.9;line-height:1.7;font-size:13px}
+.card small{color:var(--muted);font-size:11px;line-height:1.5}
+.stitle{display:inline-flex;align-items:center;gap:8px;font-size:15px;
+  color:var(--neon);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.stitle::before{content:'';width:7px;height:7px;border-radius:50%;
+  background:var(--purple);box-shadow:0 0 10px rgba(179,76,255,.35);flex-shrink:0}
+.splash{display:grid;place-items:center;text-align:center;gap:16px;padding:20px 0}
+.splash h2{font-size:clamp(26px,7vw,40px);color:var(--neon);
+  text-shadow:0 0 24px rgba(138,255,255,.3),0 0 42px rgba(179,76,255,.26);
+  letter-spacing:.35em;line-height:1.1}
+.splash p{color:var(--text);opacity:.8;line-height:1.7;font-size:13px}
+.chsec{padding:14px;border-radius:20px;background:rgba(255,255,255,.03);
+  border:1px solid rgba(138,255,255,.08);animation:sIn .3s ease-out}
+@keyframes sIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.pbar{height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin:8px 0}
+.pbar>div{height:100%;border-radius:inherit;
+  background:linear-gradient(90deg,rgba(138,255,255,.9),rgba(94,255,143,.9));transition:width .35s}
+.lcard{display:grid;gap:5px;border:1px solid rgba(255,255,255,.08);padding:13px;
+  border-radius:16px;background:rgba(15,6,32,.95);text-align:left;cursor:pointer;width:100%;
+  font-family:'Courier New',monospace;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1),border-color .25s}
+.lcard:not(.lk):hover{transform:translateY(-2px);border-color:rgba(138,255,255,.35)}
+.lcard:not(.lk):active{transform:scale(.97)}
+.lcard.lk{opacity:.45;cursor:not-allowed}
+.lcard h4{font-size:12px;color:var(--neon);margin-bottom:2px}
+.lcard p{color:var(--muted);font-size:11px;line-height:1.4;margin:0}
+.lmeta{justify-self:end;font-size:11px;color:rgba(138,255,255,.8)}
+.qopt{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;
+  padding:15px;border:1px solid rgba(255,255,255,.1);border-radius:16px;
+  background:rgba(22,10,48,.9);color:var(--text);cursor:pointer;width:100%;
+  font-family:'Courier New',monospace;font-size:13px;text-align:left;
+  transition:transform .2s,border-color .25s}
+.qopt:hover{transform:translateY(-1px);border-color:rgba(138,255,255,.22)}
+.qopt:disabled{pointer-events:none}
+.qopt.ok{border-color:rgba(94,255,143,.45);background:rgba(6,40,22,.9)}
+.qopt.bad{border-color:rgba(255,76,143,.45);background:rgba(44,8,16,.92)}
+.okey{min-width:34px;min-height:34px;display:grid;place-items:center;border-radius:50%;
+  background:rgba(138,255,255,.08);border:1px solid rgba(138,255,255,.16);
+  color:var(--neon);font-size:12px;flex-shrink:0}
+.fb{padding:13px;border-radius:16px;border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);color:var(--text);font-size:13px;line-height:1.6}
+.fb.ok{border-color:rgba(94,255,143,.35)}
+.fb.bad{border-color:rgba(255,76,143,.35)}
+.tbar{height:5px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.tbar>div{height:100%;border-radius:inherit;
+  background:linear-gradient(90deg,rgba(138,255,255,.9),rgba(255,76,143,.9));transition:width .9s linear}
+.rp{display:grid;gap:14px;padding:14px;border-radius:22px;
+  background:rgba(4,2,16,.95);border:1px solid rgba(255,255,255,.08)}
+.rt{font-size:17px;color:var(--neon);letter-spacing:.15em;text-transform:uppercase}
+.metrics{display:grid;gap:6px;padding:12px;border-radius:16px;
+  background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06)}
+.mr{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:3px 0}
+.ml{color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.mv{color:var(--text)}
+.xpb{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:4px}
+.xpb>div{height:100%;border-radius:inherit;
+  background:linear-gradient(90deg,rgba(94,255,143,.95),rgba(138,255,255,.9));
+  transition:width 1.2s cubic-bezier(.2,1,.3,1)}
+.cf{position:absolute;width:7px;height:7px;border-radius:3px;pointer-events:none;
+  animation:cff 1.2s ease-out forwards;z-index:10}
+@keyframes cff{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(120px) rotate(360deg);opacity:0}}
+.code{background:rgba(0,0,0,.45);border:1px solid rgba(138,76,255,.2);border-radius:10px;
+  padding:11px;font-family:'Courier New',monospace;font-size:12px;color:#c8b8ff;
+  white-space:pre;overflow-x:auto;margin:8px 0;line-height:1.5}
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.75);display:grid;
+  place-items:center;z-index:50;padding:20px}
+.modal.hide{display:none}
+.mcard{width:100%;border-radius:22px;background:rgba(8,4,20,.98);
+  border:1px solid rgba(255,255,255,.08);box-shadow:0 0 32px rgba(138,76,255,.22);
+  padding:20px;display:grid;gap:14px}
+.mcard h3{font-size:14px;color:var(--neon);letter-spacing:.14em}
+.mcard p{color:var(--text);font-size:13px;line-height:1.6;opacity:.9}
+@media(max-width:480px){
+  .phone{width:100vw;height:100vh;max-width:100vw;max-height:100vh;border-radius:0;border:none;min-height:auto}
+  .screen{border-radius:0}
+}
+</style>
+</head>
+<body>
+<div class="phone">
+
+<!-- SPLASH -->
+<div class="screen" id="splashScreen">
+  <div class="sc splash">
+    <div>
+      <h2>MORTAL<br>CODE</h2>
+      <p>Aprende Python respondiendo preguntas.<br>Supera los 6 capítulos y sube de nivel.</p>
+    </div>
+    <div class="grid">
+      <button class="btn p" onclick="goMenu()">▶ Jugar</button>
+      <button class="btn s" onclick="go('settingsScreen')">Ajustes</button>
+    </div>
+  </div>
+</div>
+
+<!-- MENU -->
+<div class="screen hide" id="menuScreen">
+  <div class="header">
+    <div><h1>Menú</h1><div class="sub">Elige una opción</div></div>
+    <div class="pills">
+      <span class="pill" id="mXP">XP 0</span>
+      <span class="pill" id="mLvl">Nivel 1</span>
+      <span class="pill" id="mCoins">💰 0</span>
+    </div>
+  </div>
+  <div class="sc">
+    <div class="card">
+      <div class="stitle">Bienvenido</div>
+      <p>El juego tiene 6 capítulos de Python. Completa niveles, responde bien y acumula racha.</p>
+      <p style="margin-top:8px;font-size:12px;color:var(--muted)">Niveles: <span id="mProg">0/24</span></p>
+      <div class="pbar" style="margin-top:6px"><div id="mProgBar" style="width:0%"></div></div>
+    </div>
+    <div class="grid">
+      <button class="btn p" onclick="go('mapScreen');renderMap()">Mapa de capítulos</button>
+      <button class="btn" onclick="doContinue()">Continuar</button>
+      <button class="btn s" onclick="askReset()">Reiniciar juego</button>
+    </div>
+    <button class="btn s" onclick="go('splashScreen')">← Inicio</button>
+  </div>
+</div>
+
+<!-- MAP -->
+<div class="screen hide" id="mapScreen">
+  <div class="header">
+    <button class="btn sm s" onclick="go('menuScreen');renderMenu()">← Menú</button>
+    <div><h1>Mapa</h1><div class="sub">Capítulos de Python</div></div>
+    <div class="pills">
+      <span class="pill" id="mapLives">❤️❤️❤️</span>
+      <span class="pill" id="mapStreak">🔥 0</span>
+    </div>
+  </div>
+  <div class="sc" id="mapContent"></div>
+</div>
+
+<!-- LESSON -->
+<div class="screen hide" id="lessonScreen">
+  <div class="header">
+    <button class="btn sm s" onclick="go('mapScreen');renderMap()">← Mapa</button>
+    <div><h1>Lección</h1><div class="sub" id="lessonSub">Nivel 1</div></div>
+    <div class="pills"><span class="pill" id="lessonPill">Nv 1</span></div>
+  </div>
+  <div class="sc" id="lessonContent"></div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen hide" id="quizScreen">
+  <div class="header">
+    <button class="btn sm s" onclick="backFromQuiz()">← Mapa</button>
+    <div><h1>Pregunta</h1><div class="sub">Responde antes de que acabe el tiempo</div></div>
+    <div class="pills">
+      <span class="pill" id="qLives">❤️❤️❤️</span>
+      <span class="pill" id="qTimer">00:45</span>
+    </div>
+  </div>
+  <div class="sc">
+    <div class="tbar"><div id="tbarFill" style="width:100%"></div></div>
+    <div class="card" id="quizQ"></div>
+    <div id="quizOpts" style="display:grid;gap:8px"></div>
+    <div class="fb hide" id="quizFb"></div>
+    <div class="grid" id="quizNav"></div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="screen hide" id="resultScreen">
+  <div class="header">
+    <button class="btn sm s" onclick="go('mapScreen');renderMap()">← Mapa</button>
+    <div><h1 id="rTitle">Resultado</h1><div class="sub" id="rSub">El juego decide</div></div>
+    <div class="pills"><span class="pill" id="rXP">+0 XP</span></div>
+  </div>
+  <div class="sc" id="resultContent" style="position:relative"></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="screen hide" id="settingsScreen">
+  <div class="header">
+    <button class="btn sm s" onclick="go('menuScreen');renderMenu()">← Menú</button>
+    <div><h1>Ajustes</h1><div class="sub">Opciones del juego</div></div>
+    <div class="pills"><span class="pill">v2.0</span></div>
+  </div>
+  <div class="sc">
+    <div class="card">
+      <div class="stitle">Sonido</div>
+      <button class="btn" id="soundBtn" onclick="toggleSound()">Sonido: ON</button>
+    </div>
+    <div class="card">
+      <div class="stitle">Créditos</div>
+      <p>MORTAL CODE — Juego educativo de Python</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal hide" id="modal">
+  <div class="mcard">
+    <h3 id="mTitle">Confirmar</h3>
+    <p id="mMsg">¿Estás seguro?</p>
+    <div class="grid" id="mActions"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const CHAPTERS=[
+  {title:'Capítulo 1 — Introducción',range:[1,4],desc:'Tipos de datos y print()',exp:'Python es un lenguaje interpretado. Tipos básicos: int, float, str, bool. La función print() muestra información en pantalla.'},
+  {title:'Capítulo 2 — Variables',range:[5,8],desc:'Guardar y modificar valores',exp:'Las variables guardan valores. Python infiere el tipo automáticamente. Los nombres pueden tener letras, números y guiones bajos, pero no pueden empezar con un número.'},
+  {title:'Capítulo 3 — Condicionales',range:[9,12],desc:'if, else y elif',exp:'if evalúa una expresión booleana. else se ejecuta cuando es False. elif encadena múltiples condiciones. Operadores de comparación: ==, !=, <, >, <=, >=.'},
+  {title:'Capítulo 4 — Bucles',range:[13,16],desc:'for y while',exp:'for itera sobre secuencias. while repite mientras la condición sea True. break detiene el bucle, continue salta al siguiente paso.'},
+  {title:'Capítulo 5 — Funciones',range:[17,20],desc:'def y return',exp:'Las funciones se definen con def. Los parámetros reciben valores al llamarla. return devuelve un resultado. Hacen el código modular y reutilizable.'},
+  {title:'Capítulo 6 — Clases',range:[21,24],desc:'Objetos y atributos',exp:'Las clases son plantillas para crear objetos. __init__ inicializa el objeto. self referencia la instancia. Los atributos son propiedades y los métodos son funciones internas.'}
+];
+
+const LEVELS=[
+  {title:'print()',tip:'La función print() muestra texto en pantalla.',code:'print("Hola mundo")',q:'¿Qué hace print()?',opts:['Muestra texto en pantalla','Guarda un valor','Pausa el programa','Crea una variable'],a:0,exp:'print() escribe texto en la salida estándar del sistema.'},
+  {title:'Tipos básicos',tip:'Los tipos principales son: int, float, str y bool.',code:'nombre = "Ana"\nedad = 20',q:'¿Qué tipo de dato es edad?',opts:['str','int','bool','float'],a:1,exp:'edad = 20 es un número entero, tipo int.'},
+  {title:'Booleanos',tip:'True y False son los dos valores booleanos en Python.',code:'activo = True\npausado = False',q:'¿Cuál es el tipo de activo?',opts:['str','int','bool','float'],a:2,exp:'True y False son del tipo bool (booleano).'},
+  {title:'Concatenar cadenas',tip:'El operador + une dos cadenas de texto.',code:'saludo = "Hola" + " mundo"',q:'¿Qué contiene saludo?',opts:['"Hola"','"mundo"','"Hola mundo"','Error'],a:2,exp:'El operador + une las dos cadenas en una sola.'},
+  {title:'Nombres de variables',tip:'Los nombres pueden tener letras, números y guiones bajos.',code:'puntos_totales = 42',q:'¿Es válido el nombre puntos_totales?',opts:['Sí','No, tiene guión bajo','Solo en Python 2','Solo si es número'],a:0,exp:'Los guiones bajos son válidos en nombres de variables.'},
+  {title:'Listas',tip:'Las listas se escriben con corchetes [].',code:'colores = ["rojo", "azul"]',q:'¿Qué tipo de dato es colores?',opts:['str','list','dict','bool'],a:1,exp:'Los corchetes [] crean una lista en Python.'},
+  {title:'Modificar variables',tip:'Puedes cambiar el valor de una variable en cualquier momento.',code:'vida = 10\nvida = vida - 3',q:'¿Cuánto vale vida al final?',opts:['7','13','10','Error'],a:0,exp:'10 - 3 = 7. La variable vida queda en 7.'},
+  {title:'Índices',tip:'Los caracteres de una cadena se acceden por posición, desde 0.',code:'palabra = "Python"\nletra = palabra[0]',q:'¿Qué valor tiene letra?',opts:['"P"','"y"','"Python"','Error'],a:0,exp:'El índice 0 es el primer carácter: "P".'},
+  {title:'if básico',tip:'El bloque if se ejecuta solo cuando la condición es True.',code:'tiene_llave = True\nif tiene_llave:\n  print("Abre")',q:'¿Cuándo se ejecuta print("Abre")?',opts:['Cuando tiene_llave es True','Cuando tiene_llave es False','Siempre','Nunca'],a:0,exp:'El bloque if se ejecuta cuando la condición es True.'},
+  {title:'else',tip:'else se ejecuta cuando la condición del if es False.',code:'tiene_llave = False\nif tiene_llave:\n  print("Abre")\nelse:\n  print("Cerrado")',q:'¿Qué se imprime?',opts:['"Abre"','"Cerrado"','Nada','Error'],a:1,exp:'tiene_llave es False, así que se ejecuta el else.'},
+  {title:'elif',tip:'elif agrega condiciones adicionales entre if y else.',code:'nota = 7\nif nota >= 9:\n  print("Excelente")\nelif nota >= 6:\n  print("Aprobado")',q:'¿Qué se imprime?',opts:['"Excelente"','"Aprobado"','Nada','Error'],a:1,exp:'nota >= 9 es False, nota >= 6 es True → "Aprobado".'},
+  {title:'Operador ==',tip:'== comprueba si dos valores son iguales.',code:'print(5 == 5)',q:'¿Qué imprime este código?',opts:['True','False','5','Error'],a:0,exp:'5 == 5 es True, así que print muestra True.'},
+  {title:'Bucle for',tip:'for recorre cada elemento de una lista o rango.',code:'for i in [1, 2, 3]:\n  print(i)',q:'¿Qué valores imprime?',opts:['0 1 2','1 2 3','0 1 2 3','Solo 3'],a:1,exp:'El for recorre la lista e imprime 1, 2 y 3.'},
+  {title:'Bucle while',tip:'while repite el bloque mientras la condición sea True.',code:'i = 0\nwhile i < 3:\n  i += 1',q:'¿Cuándo termina el while?',opts:['Cuando i >= 3','Cuando i < 3','Nunca','Cuando i == 0'],a:0,exp:'El bucle para cuando i ya no es menor que 3.'},
+  {title:'break',tip:'break detiene el bucle inmediatamente.',code:'for i in range(5):\n  if i == 2:\n    break',q:'¿En qué valor para el bucle?',opts:['0','1','2','4'],a:2,exp:'Cuando i == 2 se ejecuta break y el bucle termina.'},
+  {title:'continue',tip:'continue salta al siguiente paso del bucle.',code:'for i in range(3):\n  if i == 1:\n    continue\n  print(i)',q:'¿Qué números se imprimen?',opts:['0 1 2','0 2','1 2','Solo 1'],a:1,exp:'El 1 se salta con continue. Se imprimen 0 y 2.'},
+  {title:'def',tip:'def crea una función con un nombre y un bloque de código.',code:'def saludar():\n  return "Hola"',q:'¿Qué devuelve saludar()?',opts:['"Hola"','None','Error','Una función'],a:0,exp:'return devuelve el valor indicado, en este caso "Hola".'},
+  {title:'Llamar funciones',tip:'Llamas a una función escribiendo su nombre seguido de ().',code:'def sumar():\n  return 5\nprint(sumar())',q:'¿Qué se imprime?',opts:['5','sumar','None','Error'],a:0,exp:'sumar() retorna 5 y print lo muestra.'},
+  {title:'Parámetros',tip:'Los parámetros reciben valores cuando llamas la función.',code:'def doble(x):\n  return x * 2',q:'¿Qué rol cumple x en esta función?',opts:['Variable global','Parámetro','Otra función','Clase'],a:1,exp:'x es el parámetro que recibe el valor al llamar a doble().'},
+  {title:'return',tip:'return envía un valor de vuelta al código que llamó la función.',code:'def activo():\n  return True',q:'¿Qué hace return True?',opts:['Imprime True','Devuelve True al llamador','Para el programa','Crea una variable'],a:1,exp:'return devuelve el valor al código que llamó la función.'},
+  {title:'class',tip:'class define una plantilla para crear objetos.',code:'class Jugador:\n  pass',q:'¿Qué hace class en Python?',opts:['Crea un objeto','Define una clase','Declara una variable','Llama una función'],a:1,exp:'class define una clase, que es una plantilla para crear objetos.'},
+  {title:'Instancias',tip:'Crear un objeto a partir de una clase se llama instanciar.',code:'class Jugador:\n  pass\nj = Jugador()',q:'¿Qué es j?',opts:['Una clase','Una instancia','Una función','Un parámetro'],a:1,exp:'j es una instancia (objeto) de la clase Jugador.'},
+  {title:'Atributos',tip:'Los atributos son variables que pertenecen a un objeto.',code:'class Jugador:\n  def __init__(self):\n    self.vida = 100',q:'¿Qué es self.vida?',opts:['Un método','Un atributo','Una clase','Una función'],a:1,exp:'vida es un atributo de la instancia, definido en __init__.'},
+  {title:'Métodos',tip:'Los métodos son funciones que pertenecen a una clase.',code:'class Jugador:\n  def atacar(self):\n    return "golpe"',q:'¿Qué es atacar?',opts:['Atributo','Método','Clase','Variable'],a:1,exp:'atacar es un método: una función definida dentro de la clase.'}
+];
+
+let S={lv:1,xp:0,coins:0,streak:0,lives:3,done:[],unlocked:1,last:1,sound:true,timer:null,secs:45,qStart:0,qDur:0};
+
+function load(){try{const d=localStorage.getItem('mc4');if(d){const p=JSON.parse(d);S={...S,...p}}}catch(e){}}
+function save(){localStorage.setItem('mc4',JSON.stringify({lv:S.lv,xp:S.xp,coins:S.coins,streak:S.streak,lives:S.lives,done:S.done,unlocked:S.unlocked,last:S.last,sound:S.sound}))}
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.add('hide'));document.getElementById(id).classList.remove('hide')}
+function H(n){return['❤️','❤️','❤️'].map((_,i)=>i<n?'❤️':'🖤').join('')}
+function F(n){return n>0?'🔥'.repeat(Math.min(n,5)):'0'}
+function lvl(){return Math.max(1,Math.floor(S.xp/100)+1)}
+function chapterStart(n){const ch=CHAPTERS.find(c=>n>=c.range[0]&&n<=c.range[1]);return ch?ch.range[0]:1}
+
+function showModal(title,msg,actions){
+  document.getElementById('mTitle').textContent=title;
+  document.getElementById('mMsg').textContent=msg;
+  const act=document.getElementById('mActions');
+  act.innerHTML='';
+  actions.forEach(a=>{
+    const b=document.createElement('button');
+    b.className='btn '+(a.primary?'p':'s');
+    b.textContent=a.label;
+    b.onclick=()=>{document.getElementById('modal').classList.add('hide');a.fn()};
+    act.appendChild(b);
+  });
+  document.getElementById('modal').classList.remove('hide');
+}
+
+function goMenu(){go('menuScreen');renderMenu()}
+function renderMenu(){
+  document.getElementById('mXP').textContent='XP '+S.xp;
+  document.getElementById('mLvl').textContent='Nivel '+lvl();
+  document.getElementById('mCoins').textContent='💰 '+S.coins;
+  document.getElementById('mProg').textContent=S.done.length+'/'+LEVELS.length;
+  document.getElementById('mProgBar').style.width=Math.round(S.done.length/LEVELS.length*100)+'%';
+}
+
+function renderMap(){
+  document.getElementById('mapLives').textContent=H(S.lives);
+  document.getElementById('mapStreak').textContent='🔥 '+S.streak;
+  const mc=document.getElementById('mapContent');
+  mc.innerHTML='';
+  CHAPTERS.forEach((ch,ci)=>{
+    const total=ch.range[1]-ch.range[0]+1;
+    const idxs=Array.from({length:total},(_,i)=>ch.range[0]+i);
+    const done=idxs.filter(i=>S.done.includes(i)).length;
+    const pct=Math.round(done/total*100);
+    const firstUnlocked=idxs[0]<=S.unlocked;
+    const status=done===total?'Completo':!firstUnlocked?'Bloqueado':'En progreso';
+    const sec=document.createElement('div');
+    sec.className='chsec';
+    sec.style.animationDelay=(ci*.07)+'s';
+    sec.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">
+        <div>
+          <div style="font-size:13px;color:var(--text);margin-bottom:2px">${ch.title}</div>
+          <div style="font-size:11px;color:var(--muted)">${ch.desc}</div>
+        </div>
+        <span style="font-size:10px;padding:3px 8px;border-radius:8px;background:rgba(255,255,255,.06);
+          border:1px solid rgba(138,255,255,.1);color:var(--muted);white-space:nowrap">${status} ${done}/${total}</span>
+      </div>
+      <div class="pbar"><div style="width:${pct}%"></div></div>`;
+    const lg=document.createElement('div');
+    lg.style.cssText='display:grid;gap:7px;margin-top:6px';
+    idxs.forEach(li=>{
+      if(li-1<LEVELS.length){
+        const lv=LEVELS[li-1];
+        const unlocked=li<=S.unlocked;
+        const completed=S.done.includes(li);
+        const btn=document.createElement('button');
+        btn.className='lcard'+(unlocked?'':' lk');
+        btn.disabled=!unlocked;
+        btn.innerHTML=`<div><h4>Nivel ${li} — ${lv.title}</h4><p>${lv.tip}</p></div>
+          <div class="lmeta">${completed?'✓ Hecho':unlocked?'▶ Jugar':'🔒 Bloqueado'}</div>`;
+        if(unlocked)btn.onclick=()=>selectLevel(li);
+        lg.appendChild(btn);
+      }
+    });
+    sec.appendChild(lg);
+    mc.appendChild(sec);
+  });
+}
+
+function selectLevel(n){S.lv=n;S.last=n;save();renderLesson()}
+function doContinue(){S.lv=S.last||S.unlocked;renderLesson()}
+
+function renderLesson(){
+  const lv=LEVELS[S.lv-1];
+  const ch=CHAPTERS.find(c=>S.lv>=c.range[0]&&S.lv<=c.range[1]);
+  document.getElementById('lessonPill').textContent='Nv '+S.lv;
+  document.getElementById('lessonSub').textContent=lv.title;
+  document.getElementById('lessonContent').innerHTML=`
+    <div class="card">
+      <div class="stitle">${lv.title}</div>
+      <p style="margin-bottom:8px">${lv.tip}</p>
+      ${lv.code?`<div class="code">${lv.code}</div>`:''}
+      <small>${ch?ch.exp:''}</small>
+    </div>
+    <div class="grid">
+      <button class="btn p" onclick="startQuiz()">Responder pregunta →</button>
+      <button class="btn s" onclick="go('mapScreen');renderMap()">← Volver al mapa</button>
+    </div>`;
+  go('lessonScreen');
+}
+
+function startQuiz(){
+  const lv=LEVELS[S.lv-1];
+  S.secs=45;S.qStart=Date.now();
+  clearInterval(S.timer);
+  document.getElementById('qLives').textContent=H(S.lives);
+  const fb=document.getElementById('quizFb');
+  fb.textContent='';fb.className='fb hide';
+  document.getElementById('quizNav').innerHTML='';
+  document.getElementById('quizQ').innerHTML=`
+    <div class="stitle">Pregunta</div>
+    <p style="font-size:14px;line-height:1.6;margin-bottom:4px">${lv.q}</p>
+    ${lv.code?`<div class="code">${lv.code}</div>`:''}`;
+  const opts=document.getElementById('quizOpts');
+  opts.innerHTML='';
+  lv.opts.forEach((opt,i)=>{
+    const b=document.createElement('button');
+    b.className='qopt';
+    b.innerHTML=`<span class="okey">${String.fromCharCode(65+i)}</span><span>${opt}</span>`;
+    b.onclick=()=>answerQ(i);
+    opts.appendChild(b);
+  });
+  updateTimer();
+  S.timer=setInterval(()=>{
+    S.secs--;updateTimer();
+    if(S.secs<=0){clearInterval(S.timer);finishQuiz(false,'Se acabó el tiempo.')}
+  },1000);
+  go('quizScreen');
+}
+
+function updateTimer(){
+  document.getElementById('qTimer').textContent='00:'+String(S.secs).padStart(2,'0');
+  document.getElementById('tbarFill').style.width=(S.secs/45*100)+'%';
+}
+
+function answerQ(sel){
+  clearInterval(S.timer);
+  const lv=LEVELS[S.lv-1];
+  S.qDur=Math.max(1,Math.round((Date.now()-S.qStart)/1000));
+  document.querySelectorAll('.qopt').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===lv.a)b.classList.add('ok');
+    if(i===sel&&i!==lv.a)b.classList.add('bad');
+  });
+  const correct=sel===lv.a;
+  const fb=document.getElementById('quizFb');
+  fb.textContent=(correct?'✓ Correcto — ':'✗ Incorrecto — ')+lv.exp;
+  fb.className='fb '+(correct?'ok':'bad');
+  document.getElementById('quizNav').innerHTML=`<button class="btn p" onclick="finishQuiz(${correct},'')">Ver resultado →</button>`;
+}
+
+function backFromQuiz(){clearInterval(S.timer);go('mapScreen');renderMap()}
+
+function finishQuiz(correct,msg){
+  clearInterval(S.timer);
+  const lv=LEVELS[S.lv-1];
+  let xpR=0,coinR=0;
+  if(correct){
+    xpR=20+Math.floor(S.lv/2);
+    if(!S.done.includes(S.lv)){coinR=100;S.coins+=coinR;S.done.push(S.lv)}
+    S.xp+=xpR;S.streak++;
+    S.unlocked=Math.min(LEVELS.length,Math.max(S.unlocked,S.lv+1));
+    save();renderResult(true,xpR,coinR,msg||lv.exp);
+  }else{
+    S.lives=Math.max(0,S.lives-1);
+    S.streak=0;
+    save();
+    if(S.lives===0){
+      // Sin vidas: reiniciar capítulo
+      renderResult(false,0,0,msg||lv.exp,true);
+    }else{
+      renderResult(false,0,0,msg||lv.exp,false);
+    }
+  }
+}
+
+function renderResult(success,xpR,coinR,msg,noLives=false){
+  document.getElementById('rTitle').textContent=success?'¡CORRECTO!':noLives?'SIN VIDAS':'INCORRECTO';
+  document.getElementById('rSub').textContent=success?'Pasaste al siguiente nivel':noLives?'El capítulo se reinicia':'Vuelve a intentarlo';
+  document.getElementById('rXP').textContent=success?'+'+xpR+' XP':'0 XP';
+  const xpPct=Math.min(100,S.xp%100);
+  const all=S.done.length===LEVELS.length;
+
+  let btns='';
+  if(success){
+    if(all){
+      btns=`<button class="btn p" onclick="renderComplete()">Ver final 🏆</button>`;
+    }else{
+      btns=`<button class="btn p" onclick="nextLevel()">Siguiente nivel →</button>`;
+    }
+  }else if(noLives){
+    btns=`<button class="btn p" onclick="restartChapter()">Reiniciar capítulo</button>`;
+  }else{
+    btns=`<button class="btn p" onclick="startQuiz()">Reintentar</button>`;
+  }
+
+  document.getElementById('resultContent').innerHTML=`
+    <div class="rp">
+      <div class="rt">${success?'¡Nivel superado!':noLives?'Sin vidas — capítulo reiniciado':'Inténtalo de nuevo'}</div>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6">${msg}</p>
+      <div class="metrics">
+        <div class="mr"><span class="ml">Resultado</span><span class="mv">${success?'✓ Correcto':'✗ Incorrecto'}</span></div>
+        <div class="mr"><span class="ml">Tiempo</span><span class="mv">${S.qDur}s</span></div>
+        <div class="mr"><span class="ml">Monedas</span><span class="mv">+${coinR}</span></div>
+        <div class="mr"><span class="ml">Racha</span><span class="mv">${F(S.streak)}</span></div>
+        <div class="mr"><span class="ml">Vidas</span><span class="mv">${H(S.lives)}</span></div>
+        <div style="margin-top:6px;font-size:11px;color:var(--muted)">Nivel ${lvl()} — XP</div>
+        <div class="xpb"><div id="xpFill" style="width:0%"></div></div>
+      </div>
+      <div class="grid">
+        ${btns}
+        <button class="btn s" onclick="renderLesson()">Ver lección</button>
+        <button class="btn s" onclick="go('mapScreen');renderMap()">← Mapa</button>
+      </div>
+    </div>`;
+  go('resultScreen');
+  setTimeout(()=>{const f=document.getElementById('xpFill');if(f)f.style.width=xpPct+'%'},80);
+  if(success)confetti();
+}
+
+function restartChapter(){
+  // Reinicia las vidas y vuelve al primer nivel del capítulo
+  S.lives=3;
+  S.lv=chapterStart(S.lv);
+  S.last=S.lv;
+  save();
+  renderLesson();
+}
+
+function nextLevel(){S.lv=Math.min(LEVELS.length,S.lv+1);renderLesson()}
+
+function renderComplete(){
+  document.getElementById('rTitle').textContent='¡COMPLETADO!';
+  document.getElementById('rSub').textContent='Terminaste todos los niveles';
+  document.getElementById('rXP').textContent='🏆';
+  document.getElementById('resultContent').innerHTML=`
+    <div class="rp">
+      <div class="rt">¡Lo lograste!</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Terminaste todos los capítulos. Dominas los fundamentos de Python.</p>
+      <div class="metrics">
+        <div class="mr"><span class="ml">Niveles</span><span class="mv">${S.done.length}/${LEVELS.length}</span></div>
+        <div class="mr"><span class="ml">XP total</span><span class="mv">${S.xp}</span></div>
+        <div class="mr"><span class="ml">Monedas</span><span class="mv">💰 ${S.coins}</span></div>
+      </div>
+      <div class="grid">
+        <button class="btn p" onclick="go('mapScreen');renderMap()">Ver mapa</button>
+        <button class="btn s" onclick="askReset()">Reiniciar juego</button>
+      </div>
+    </div>`;
+  go('resultScreen');confetti();
+}
+
+function confetti(){
+  const c=document.getElementById('resultContent');
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');
+    p.className='cf';
+    p.style.cssText=`background:${i%2?'rgba(94,255,143,.9)':'rgba(138,255,255,.85)'};left:${10+Math.random()*80}%;top:${-5-Math.random()*15}%;animation-duration:${1+Math.random()*.7}s`;
+    c.appendChild(p);setTimeout(()=>p.remove(),1400);
+  }
+}
+
+function askReset(){
+  showModal('Reiniciar juego','¿Quieres borrar todo tu progreso y empezar desde cero?',[
+    {label:'Cancelar',primary:false,fn:()=>{}},
+    {label:'Sí, reiniciar',primary:true,fn:resetGame}
+  ]);
+}
+
+function resetGame(){
+  S={lv:1,xp:0,coins:0,streak:0,lives:3,done:[],unlocked:1,last:1,sound:S.sound,timer:null,secs:45,qStart:0,qDur:0};
+  save();go('menuScreen');renderMenu();
+}
+
+function toggleSound(){
+  S.sound=!S.sound;save();
+  document.getElementById('soundBtn').textContent='Sonido: '+(S.sound?'ON':'OFF');
+}
+
+load();renderMenu();go('splashScreen');
+</script>
+</body>
+</html>
